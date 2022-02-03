@@ -1,6 +1,10 @@
-const t = [1, 2, 3, 4, 5]
+const arto = {
+    name: 'Arto Hellas',
+    greet: function() {
+      console.log('hello, my name is ' + this.name)
+    },
+  }
+  
+  setTimeout(arto.greet, 1000)
 
-const [first, second, ...rest] = t
-
-console.log(first, second)  // 1, 2 es impreso
-console.log(rest)          // [3, 4 ,5] es impreso
+  setTimeout(arto.greet.bind(arto), 1000)
