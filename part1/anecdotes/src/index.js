@@ -20,7 +20,7 @@ const DisplayMostVotedQuote = ({anecdotes, points}) => {
       </div>
     )
   }
-  
+
   return (
     <div>
       <p>{anecdotes[index]}</p>
