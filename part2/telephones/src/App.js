@@ -1,22 +1,29 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
+
 import Content from './components/Content'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 
 const App = () => {
   //estados
-  const [ persons, setPersons ] = useState([
-    { name: 'Arto Hellas', number: '123456789'},
-    { name: 'Ada Lovelace', number: '39-44-5323523' },
-    { name: 'Dan Abramov', number: '12-43-234345' },
-    { name: 'Mary Poppendieck', number: '39-23-6423122' }
-  ]) 
+  const [ persons, setPersons] = useState([])
   const [ newName, setNewName ] = useState('')
   const [ newPhone, setNewphone ] = useState('')
   const [ nameSearched, setNameSearched] = useState('')
   const [ showAll, setshowAll] = useState(true)
 
   //controladores de eventos
+  useEffect(() => {
+      console.log("effect");
+      axios
+        .get("http://localhost:3001/persons")
+        .then(response => {
+          console.log("promise fullfilled");
+          setPersons(response.data)
+        })
+  }, []) //El objeto vacio para que solo se realice la primera vez que se renderiza el componente y no todas
+
   const handleNameChange = (event) => {
     setNewName(event.target.value)
   }
@@ -40,7 +47,8 @@ const App = () => {
     event.preventDefault(); //Para evitar que se refresque la pagina que se hace por defecto al enviar un form
     let exists = false;
     for (let i = 0; i < persons.length; i++) {
-      if(persons[i].name.includes(newName)){
+      console.log(persons[i].name);
+      if(persons[i].name.toLowerCase() === newName.toLowerCase()){ //You cant add 2 equal names but you can add
         exists = true;
       }
     }
