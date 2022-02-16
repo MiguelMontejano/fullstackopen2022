@@ -4,6 +4,7 @@ import axios from 'axios'
 import Content from './components/Content'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
+import personService from './services/persons'
 
 const App = () => {
   //estados
@@ -15,12 +16,10 @@ const App = () => {
 
   //controladores de eventos
   useEffect(() => {
-      console.log("effect");
-      axios
-        .get("http://localhost:3001/persons")
-        .then(response => {
-          console.log("promise fullfilled");
-          setPersons(response.data)
+      personService
+        .getAll()
+        .then(initialPhones => {
+          setPersons(initialPhones)
         })
   }, []) //El objeto vacio para que solo se realice la primera vez que se renderiza el componente y no todas
 
@@ -46,26 +45,56 @@ const App = () => {
   const addPerson = (event) => {
     event.preventDefault(); //Para evitar que se refresque la pagina que se hace por defecto al enviar un form
     let exists = false;
+    let id, name, phone;
     for (let i = 0; i < persons.length; i++) {
-      console.log(persons[i].name);
-      if(persons[i].name.toLowerCase() === newName.toLowerCase()){ //You cant add 2 equal names but you can add
+      if(persons[i].name.toLowerCase() === newName.toLowerCase()){ //You cant add 2 equal names but you can add Arto Hellas and Arto for example
         exists = true;
+        //obtengo los valores que me interesan
+        id = persons[i].id
+        name = persons[i].name
       }
     }
 
     if(exists === true){
-      alert(`${newName} is already added to phonebook`)
+      const result = window.confirm(`${name} is already added to your phonebook, replace the old number with a new one?`)
+      if(result === true){ //El usuario acepta el popup
+        const person = persons.find(p => p.id === id)
+        const changedPerson = { ...person, number: newPhone }
+  
+        personService
+          .update(id, changedPerson)
+          .then(returnedPhone => {
+            setPersons(persons.map(person => person.id !== id ? person : returnedPhone))
+          })
+      }
+
     }else{
       const personObject = {
         name:newName,
         number:newPhone
       }
-  
-      setPersons(persons.concat(personObject))
 
+      personService
+        .create(personObject)
+        .then(returnedPhone => {
+          setPersons(persons.concat(returnedPhone))
+        })
+  
     }
     setNewName('') //Siempre reseteamos el input
     setNewphone('') //Siempre reseteamos el input
+  }
+
+  const deletePerson = (id, name) =>{
+    const result = window.confirm(`Are you sure do you want to delete ${name} from your phonebook?`)
+    if(result === true){ //El usuario acepta el popup
+      personService
+      .remove(id)
+      .then( () => {
+        setPersons(persons.filter(person => person.id !== id))
+      })
+    }
+
   }
 
   //constantes y variables
@@ -81,7 +110,7 @@ const App = () => {
       <h3>add a new phone</h3>
       <PersonForm addPerson={addPerson} newName={newName} handleNameChange={handleNameChange} newPhone={newPhone} handlePhoneChange={handlePhoneChange} />
       <h3>Numbers</h3>
-      <Content persons={phonesToShow}/>
+      <Content persons={phonesToShow} deletePerson={deletePerson} />
     </div>
   )
 }

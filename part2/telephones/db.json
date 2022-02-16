@@ -1,29 +1,14 @@
 {
-  "persons":[
-    { 
-      "name": "Arto Hellas", 
-      "number": "040-123456",
-      "id": 1
+  "persons": [
+    {
+      "name": "Arto Hellas",
+      "number": "778-95-11445941",
+      "id": 11
     },
-    { 
-      "name": "Ada Lovelace", 
-      "number": "39-44-5323523",
-      "id": 2
-    },
-    { 
-      "name": "Dan Abramov", 
-      "number": "12-43-234345",
-      "id": 3
-    },
-    { 
-      "name": "Mary Poppendieck", 
-      "number": "39-23-6423122",
-      "id": 4
-    },
-    { 
-      "name": "Felipe de Monaco", 
-      "number": "564-83-1485874",
-      "id": 5
+    {
+      "name": "Felipe de Monaco",
+      "number": "0",
+      "id": 12
     }
   ]
 }

@@ -1,9 +1,9 @@
 import React from "react";
 import Person from './Person'
 
-const Content = ({persons}) => {
+const Content = ({persons, deletePerson}) => {
     return(
-        persons.map(person => <Person key={person.name} name={person.name} number={person.number}/>)
+        persons.map(person => <Person key={person.name} person={person} deletePerson={deletePerson} />)
     )
 }
 
