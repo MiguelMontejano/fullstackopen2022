@@ -5,6 +5,7 @@ import Content from './components/Content'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import personService from './services/persons'
+import Notification from './components/Notification'
 
 const App = () => {
   //estados
@@ -13,6 +14,7 @@ const App = () => {
   const [ newPhone, setNewphone ] = useState('')
   const [ nameSearched, setNameSearched] = useState('')
   const [ showAll, setshowAll] = useState(true)
+  const [ Message, setMessage] = useState(null)
 
   //controladores de eventos
   useEffect(() => {
@@ -45,7 +47,7 @@ const App = () => {
   const addPerson = (event) => {
     event.preventDefault(); //Para evitar que se refresque la pagina que se hace por defecto al enviar un form
     let exists = false;
-    let id, name, phone;
+    let id, name;
     for (let i = 0; i < persons.length; i++) {
       if(persons[i].name.toLowerCase() === newName.toLowerCase()){ //You cant add 2 equal names but you can add Arto Hellas and Arto for example
         exists = true;
@@ -65,6 +67,17 @@ const App = () => {
           .update(id, changedPerson)
           .then(returnedPhone => {
             setPersons(persons.map(person => person.id !== id ? person : returnedPhone))
+            setMessage(`${name} phone updated`)
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000)
+          })
+          .catch(error => {
+            setMessage(`¡ERROR: Person ${name} was already removed from the server!`)
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000)
+            setPersons(persons.filter(p => p.id !== id))
           })
       }
 
@@ -78,6 +91,10 @@ const App = () => {
         .create(personObject)
         .then(returnedPhone => {
           setPersons(persons.concat(returnedPhone))
+          setMessage(`${newName} Added to your phonebook`)
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
         })
   
     }
@@ -93,6 +110,14 @@ const App = () => {
       .then( () => {
         setPersons(persons.filter(person => person.id !== id))
       })
+      .catch(error => {
+        setMessage(`¡ERROR: Person ${name} was already removed from the server!`)
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
+        setPersons(persons.filter(p => p.id !== id))
+      })
+
     }
 
   }
@@ -106,6 +131,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={Message} />
       <Filter value={nameSearched} onChange={handleSearchedChange} />
       <h3>add a new phone</h3>
       <PersonForm addPerson={addPerson} newName={newName} handleNameChange={handleNameChange} newPhone={newPhone} handlePhoneChange={handlePhoneChange} />
